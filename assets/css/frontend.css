@@ -1,0 +1,81 @@
+/**
+ * Frontend CSS for CSV to PDF Generator
+ */
+.csv-to-pdf-generator-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.csv-to-pdf-form {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.csv-to-pdf-message {
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 3px;
+}
+
+.csv-to-pdf-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.csv-to-pdf-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.csv-to-pdf-loader {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.csv-to-pdf-loader img {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.csv-to-pdf-download {
+    margin: 15px 0;
+}
+
+.download-zip-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.download-zip-button:hover {
+    background-color: #45a049;
+    color: white;
+}

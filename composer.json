@@ -1,0 +1,14 @@
+{
+    "name": "maksimus12/csv-to-pdf-generator",
+    "description": "WordPress plugin to generate PDF files from CSV data",
+    "type": "wordpress-plugin",
+    "require": {
+        "mpdf/mpdf": "^8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "CSVToPDFGenerator\\": "src/"
+        }
+    },
+    "license": "GPL-2.0-or-later"
+}
