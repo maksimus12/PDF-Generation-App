@@ -83,7 +83,6 @@ img {
     position: relative;
     width: 100%;
     text-align: center;
-    border-top: 1px solid #ddd;
     padding-top: 10px;
     margin-top: 20px;
 }
