@@ -3,7 +3,7 @@
  * Plugin Name: CSV to PDF Generator
  * Description: Generates multiple PDF documents from CSV file
  * Version: 1.0
- * Author: Maksimus12
+ * Author: Maxim Diacenko
  * Text Domain: csv-to-pdf-generator
  */
 
@@ -83,7 +83,7 @@ class CSV_To_PDF_Generator {
     // Shortcode function
     public function generator_shortcode($atts) {
         $atts = shortcode_atts(array(
-            'title' => 'CSV to PDF Generator',
+            'title' => 'CSV to PDF Invitation',
         ), $atts, 'csv_to_pdf_generator');
         
         ob_start();
