@@ -40,7 +40,7 @@ class PDF_Generator {
         
         foreach ($data as $index => $row) {
             // Create a unique filename
-            $filename = $this->uploads_dir . 'document_' . ($index + 1) . '_' . time() . '.pdf';
+            $filename = $this->uploads_dir . 'document_' . ($index + 1) . '_' . $row['fullNameEn'] . '.pdf';
             
             // Initialize mPDF
              $mpdf = new \Mpdf\Mpdf([
@@ -119,6 +119,12 @@ class PDF_Generator {
         }
         
         $zip->close();
+        
+        foreach ($pdf_files as $pdf_file) {
+            if (file_exists($pdf_file)) {
+                @unlink($pdf_file);
+            }
+        }
         
         // Create secure download URL through our download handler
         $nonce = wp_create_nonce('download_pdf_zip');
