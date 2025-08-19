@@ -44,7 +44,6 @@ if (!defined('ABSPATH')) {
             
             <!-- Информация о требуемых полях CSV -->
             <div class="mb-6" id="template-info">
-                <h4 class="font-medium mb-2"><?php _e('Required CSV Fields:', 'csv-to-pdf-generator'); ?></h4>
                 <div id="required-fields" class="text-sm bg-gray-50 p-3 border rounded">
                     <!-- JS заполнит эту секцию -->
                 </div>
@@ -144,49 +143,8 @@ function updateFileDisplay(file) {
     }
 }
 
-function updateTemplateInfo() {
-    var templateId = document.getElementById('template_id').value;
-    
-    if (!templateId) return;
-    
-    // AJAX запрос для получения информации о шаблоне
-    jQuery.ajax({
-        url: csv_to_pdf_vars.ajax_url,
-        type: 'POST',
-        data: {
-            action: 'get_template_info',
-            nonce: csv_to_pdf_vars.nonce,
-            template_id: templateId
-        },
-        success: function(response) {
-            if (response.success) {
-                var requiredFieldsDiv = document.getElementById('required-fields');
-                var fieldsHTML = '';
-                
-                // Создаем HTML для требуемых полей
-                if (response.data.required_fields && Object.keys(response.data.required_fields).length > 0) {
-                    var fieldsList = '';
-                    for (var field in response.data.required_fields) {
-                        fieldsList += '<div class="mb-1"><code class="bg-gray-200 px-1 py-0.5 rounded">' + field + '</code> - ' + response.data.required_fields[field] + '</div>';
-                    }
-                    fieldsHTML = fieldsList;
-                } else {
-                    fieldsHTML = '<p>No required fields specified for this template.</p>';
-                }
-                
-                requiredFieldsDiv.innerHTML = fieldsHTML;
-            }
-        }
-    });
-}
-
-// Обновить информацию о шаблоне при загрузке страницы
+// Оставляем только обработку файла и Drag&Drop
 document.addEventListener('DOMContentLoaded', function() {
-    updateTemplateInfo();
-    
-    // Обновить информацию при изменении выбора шаблона
-    document.getElementById('template_id').addEventListener('change', updateTemplateInfo);
-    
     // Обработка выбора файла через диалог
     document.getElementById('csv_file').addEventListener('change', function(e) {
         var file = e.target.files[0] || null;

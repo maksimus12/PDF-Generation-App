@@ -46,6 +46,11 @@ function csv_to_pdf_plugin_activate() {
         file_put_contents($directory . '.htaccess', 'deny from all');
         file_put_contents($directory . 'index.php', '<?php // Silence is golden');
     }
+    // Создаем директорию для CSV-шаблонов
+    $csv_templates_dir = plugin_dir_path(dirname(__FILE__)) . 'templates/csv-templates/';
+    if (!file_exists($csv_templates_dir)) {
+        wp_mkdir_p($csv_templates_dir);
+    }
 }
 register_activation_hook(__FILE__, 'csv_to_pdf_plugin_activate');
 

@@ -21,12 +21,15 @@ jQuery(document).ready(function($) {
                     var requiredFieldsDiv = $('#required-fields');
                     var fieldsHTML = '';
                     
-                    if (response.data.required_fields && Object.keys(response.data.required_fields).length > 0) {
-                        var fieldsList = '';
-                        $.each(response.data.required_fields, function(field, label) {
-                            fieldsList += '<div class="mb-1"><code class="bg-gray-200 px-1 py-0.5 rounded">' + field + '</code> - ' + label + '</div>';
-                        });
-                        fieldsHTML = fieldsList;
+                    if (response.data.csv_template_url) {
+                        // Показываем ссылку на скачивание CSV-шаблона
+                        fieldsHTML = '<div class="mb-4">' +
+                            '<p class="mb-2">Download the CSV file template:</p>' +
+                            '<a href="' + response.data.csv_template_url + '" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors" download>' +
+                            '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />' +
+                            '</svg>Download Template</a>' +
+                            '</div>';
                     } else {
                         fieldsHTML = '<p>No required fields specified for this template.</p>';
                     }

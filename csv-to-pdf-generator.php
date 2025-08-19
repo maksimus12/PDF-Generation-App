@@ -70,6 +70,12 @@ class CSV_To_PDF_Generator {
         if (!file_exists($templates_dir)) {
             wp_mkdir_p($templates_dir);
         }
+        
+        // Create CSV templates directory if not exists
+        $csv_templates_dir = CSV_TO_PDF_PATH . 'templates/csv-templates/';
+        if (!file_exists($csv_templates_dir)) {
+            wp_mkdir_p($csv_templates_dir);
+        }
     }
     
     // Register admin scripts and styles
@@ -100,7 +106,7 @@ class CSV_To_PDF_Generator {
         return ob_get_clean();
     }
     
-    // AJAX handler for getting template info
+    // Модифицируем AJAX-обработчик для получения информации о шаблоне
     public function get_template_info() {
         // Verify nonce
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'csv_to_pdf_nonce')) {
@@ -118,6 +124,9 @@ class CSV_To_PDF_Generator {
         $template_meta = $template_manager->get_template_meta($template_id);
         
         if ($template_meta) {
+            // Добавляем URL для скачивания CSV-шаблона
+            $template_meta['csv_template_url'] = $template_manager->get_csv_template_url($template_id);
+            
             wp_send_json_success($template_meta);
         } else {
             wp_send_json_error('Template not found');
@@ -125,7 +134,6 @@ class CSV_To_PDF_Generator {
         
         wp_die();
     }
-    
     // AJAX handler for processing CSV to PDF
     public function process_csv_to_pdf() {
         // Verify nonce

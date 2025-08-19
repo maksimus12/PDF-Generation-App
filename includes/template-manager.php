@@ -69,4 +69,23 @@ class Template_Manager {
             'default_font' => !empty($font[1]) ? trim($font[1]) : 'dejavusans'
         ];
     }
+    
+    // Добавьте метод для получения пути к CSV-шаблону
+    public function get_csv_template_path($template_id) {
+        $csv_template_path = CSV_TO_PDF_PATH . 'templates/csv-templates/' . $template_id . '.csv';
+        if (file_exists($csv_template_path)) {
+            return $csv_template_path;
+        }
+        return false;
+    }
+    
+    // Добавьте метод для получения URL CSV-шаблона
+    public function get_csv_template_url($template_id) {
+        $csv_template_path = $this->get_csv_template_path($template_id);
+        if ($csv_template_path) {
+            return CSV_TO_PDF_URL . 'templates/csv-templates/' . $template_id . '.csv';
+        }
+        return false;
+    }
+        
 }
