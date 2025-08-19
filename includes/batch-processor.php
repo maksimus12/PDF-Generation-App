@@ -95,16 +95,23 @@ class Batch_Processor {
             try {
                 // Собираем все PDF-файлы
                 $pdf_files = $process_info['pdf_files'];
+                error_log("Base array contains " . count($pdf_files) . " PDF files");
                 
                 // Проверяем, есть ли дополнительные файлы в других транзиентах
                 if (!empty($process_info['pdf_files_transients'])) {
+                    error_log("Found " . count($process_info['pdf_files_transients']) . " additional transients with files");
+                    
                     foreach ($process_info['pdf_files_transients'] as $transient_id) {
                         $additional_files = get_transient($transient_id);
                         if ($additional_files && is_array($additional_files)) {
+                            error_log("Adding " . count($additional_files) . " files from transient $transient_id");
                             $pdf_files = array_merge($pdf_files, $additional_files);
-                            error_log("Added " . count($additional_files) . " files from transient $transient_id");
+                        } else {
+                            error_log("Warning: Could not retrieve files from transient $transient_id");
                         }
                     }
+                    
+                    error_log("Total files after merging all transients: " . count($pdf_files));
                 }
                 
                 // Создаем ZIP-архив со всеми PDF-файлами
@@ -119,7 +126,8 @@ class Batch_Processor {
                     'download_url' => $zip_url,
                     'progress' => 100,
                     'processed' => $process_info['processed_items'],
-                    'total' => $process_info['total_items']
+                    'total' => $process_info['total_items'],
+                    'files_count' => count($pdf_files)
                 ];
             } catch (Exception $e) {
                 error_log('Error creating ZIP file: ' . $e->getMessage());
@@ -139,11 +147,14 @@ class Batch_Processor {
         $template_id = $process_info['template_id'];
         
         try {
-            // Генерируем PDF для текущего пакета
-            $pdf_generator = new PDF_Generator();
-            $pdf_files = $pdf_generator->generate_pdfs($batch_data, $template_id);
+            // Рассчитываем начальный индекс для текущего пакета
+            $start_index = $current_batch_index * self::BATCH_SIZE;
             
-            error_log("Generated " . count($pdf_files) . " PDF files for batch $current_batch_index");
+            // Генерируем PDF для текущего пакета, передавая начальный индекс
+            $pdf_generator = new PDF_Generator();
+            $pdf_files = $pdf_generator->generate_pdfs($batch_data, $template_id, $start_index);
+            
+            error_log("Generated " . count($pdf_files) . " PDF files for batch $current_batch_index (starting from index $start_index)");
             
             // Обновляем информацию о процессе
             $process_info['processed_batches']++;
@@ -155,8 +166,10 @@ class Batch_Processor {
                 $transient_id = $process_id . '_files_' . uniqid();
                 set_transient($transient_id, $process_info['pdf_files'], DAY_IN_SECONDS);
                 $process_info['pdf_files_transients'][] = $transient_id;
-                $process_info['pdf_files'] = $pdf_files; // Начинаем новый массив файлов
                 error_log("Saved " . count($process_info['pdf_files']) . " files to transient $transient_id");
+                
+                // Начинаем новый массив с текущих файлов
+                $process_info['pdf_files'] = $pdf_files; 
             } else {
                 // Просто добавляем новые файлы к существующим
                 $process_info['pdf_files'] = array_merge($process_info['pdf_files'], $pdf_files);

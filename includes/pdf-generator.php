@@ -33,8 +33,13 @@ class PDF_Generator {
     
     /**
      * Оптимизированный метод для генерации PDF
+     * 
+     * @param array $data Данные для генерации PDF
+     * @param string $template_id ID шаблона
+     * @param int $start_index Начальный индекс для нумерации файлов (для пакетной обработки)
+     * @return array Массив путей к сгенерированным PDF-файлам
      */
-    public function generate_pdfs($data, $template_id) {
+    public function generate_pdfs($data, $template_id, $start_index = 0) {
         // Путь к шаблону
         $template_path = CSV_TO_PDF_PATH . 'templates/pdf-templates/' . $template_id . '.php';
         
@@ -49,9 +54,13 @@ class PDF_Generator {
         $pdf_files = array();
         
         foreach ($data as $index => $row) {
-            // Создаем уникальное имя файла на основе первого поля или индекса
+            // Используем глобальный индекс для уникальных имен файлов
+            $global_index = $start_index + $index;
+            
+            // Создаем уникальное имя файла с использованием глобального индекса и временной метки
             $first_field = reset($row);
-            $filename = $this->uploads_dir . 'document_' . ($index + 1) . '_' . sanitize_title($first_field) . '.pdf';
+            $timestamp = microtime(true);
+            $filename = $this->uploads_dir . 'document_' . $global_index . '_' . sanitize_title($first_field) . '_' . $timestamp . '.pdf';
             
             // Инициализируем mPDF для каждого документа отдельно, чтобы избежать утечек памяти
             $mpdf = new \Mpdf\Mpdf([
@@ -109,6 +118,33 @@ class PDF_Generator {
     }
     
     /**
+     * Удаляет PDF файлы после создания ZIP-архива
+     * 
+     * @param array $pdf_files Массив путей к PDF файлам для удаления
+     * @return int Количество успешно удаленных файлов
+     */
+    private function delete_pdf_files($pdf_files) {
+        $deleted_count = 0;
+        
+        if (empty($pdf_files)) {
+            return $deleted_count;
+        }
+        
+        foreach ($pdf_files as $file) {
+            if (file_exists($file) && is_file($file)) {
+                if (unlink($file)) {
+                    $deleted_count++;
+                } else {
+                    error_log('Failed to delete file: ' . $file);
+                }
+            }
+        }
+        
+        error_log('Deleted ' . $deleted_count . ' PDF files after creating ZIP archive');
+        return $deleted_count;
+    }
+    
+    /**
      * Создает ZIP-архив с PDF файлами и возвращает URL для скачивания
      * 
      * @param array $pdf_files Массив путей к PDF файлам
@@ -118,6 +154,8 @@ class PDF_Generator {
         if (empty($pdf_files)) {
             throw new Exception('No PDF files to archive');
         }
+        
+        error_log('Creating ZIP archive with ' . count($pdf_files) . ' files');
         
         // Создаем уникальное имя для ZIP файла
         $zip_filename = 'documents_' . time() . '_' . wp_rand() . '.zip';
@@ -130,13 +168,23 @@ class PDF_Generator {
         }
         
         // Добавляем PDF файлы в архив
+        $added_count = 0;
         foreach ($pdf_files as $pdf_file) {
             if (file_exists($pdf_file)) {
                 $zip->addFile($pdf_file, basename($pdf_file));
+                $added_count++;
+            } else {
+                error_log('File not found: ' . $pdf_file);
             }
         }
         
+        error_log('Added ' . $added_count . ' files to ZIP archive');
+        
+        // Закрываем ZIP-архив
         $zip->close();
+        
+        // Удаляем PDF-файлы после успешного создания ZIP-архива
+        $this->delete_pdf_files($pdf_files);
         
         // Создаем URL для скачивания с защитой через nonce
         $download_url = plugin_dir_url(dirname(__FILE__)) . 'download.php?file=' . $zip_filename . '&nonce=' . wp_create_nonce('download_pdf_zip');
