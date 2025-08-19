@@ -94,8 +94,7 @@ jQuery(document).ready(function($) {
         progressBar.css('width', '0%').attr('aria-valuenow', 0);
         progressText.text('Preparing data...');
         
-        // Начинаем процесс обработки
-        $.ajax({
+         $.ajax({
             url: csv_to_pdf_vars.ajax_url,
             type: 'POST',
             data: formData,
@@ -103,6 +102,8 @@ jQuery(document).ready(function($) {
             contentType: false,
             processData: false,
             success: function(response) {
+                console.log('Initial response:', response);
+                
                 if (response.success) {
                     // Если большой CSV-файл, используем пакетную обработку
                     if (response.data && response.data.process_id) {
@@ -119,7 +120,7 @@ jQuery(document).ready(function($) {
                     loader.addClass('hidden');
                     progressSection.addClass('hidden');
                     submitButton.removeClass('hidden');
-                    messageDiv.addClass('bg-red-100 text-red-800').removeClass('hidden').text('Error: ' + (response.data || 'Unknown error'));
+                    messageDiv.addClass('bg-red-100 text-red-800').removeClass('hidden').text('Error: ' + (response.data ? response.data.message || 'Unknown error' : 'Unknown error'));
                 }
             },
             error: function(xhr, status, error) {
@@ -135,88 +136,88 @@ jQuery(document).ready(function($) {
     });
     
     // Функция для обработки одного пакета
-    // Функция для обработки одного пакета
-function processBatch(processId, totalItems) {
-    console.log('Processing batch for process ID:', processId, 'Total items:', totalItems);
-    
-    $.ajax({
-        url: csv_to_pdf_vars.ajax_url,
-        type: 'POST',
-        data: {
-            action: 'process_batch',
-            nonce: csv_to_pdf_vars.nonce,
-            process_id: processId
-        },
-        dataType: 'json',
-        success: function(response) {
-            console.log('Batch processing response:', response);
-            
-            if (response.success) {
-                // Обновляем прогресс
-                var progressBar = $('.progress-bar');
-                var progressText = $('.progress-text');
+    function processBatch(processId, totalItems) {
+        console.log('Processing batch for process ID:', processId, 'Total items:', totalItems);
+        
+        $.ajax({
+            url: csv_to_pdf_vars.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'process_batch',
+                nonce: csv_to_pdf_vars.nonce,
+                process_id: processId
+            },
+            dataType: 'json',
+            success: function(response) {
+                console.log('Batch processing response:', response);
                 
-                var progress = response.progress || 0;
-                var processed = response.processed || 0;
-                var total = response.total || totalItems || 0;
-                
-                console.log(`Progress: ${progress}%, Processed: ${processed}, Total: ${total}`);
-                
-                progressBar.css('width', progress + '%').attr('aria-valuenow', progress);
-                
-                if (!response.is_completed) {
-                    // Еще есть пакеты для обработки
-                    progressText.text('Processing: ' + processed + ' of ' + total + ' documents (' + progress + '%)');
+                if (response.success && response.data) {
+                    // Обновляем прогресс
+                    var progressBar = $('.progress-bar');
+                    var progressText = $('.progress-text');
                     
-                    // Обрабатываем следующий пакет
-                    setTimeout(function() {
-                        processBatch(processId, total);
-                    }, 1000);
-                } else {
-                    // Все пакеты обработаны
-                    progressText.text('Completed! All documents processed successfully.');
+                    var data = response.data;
+                    var progress = data.progress || 0;
+                    var processed = data.processed || 0;
+                    var total = data.total || totalItems || 0;
                     
-                    // Показываем кнопку скачивания
-                    $('.csv-to-pdf-loader').addClass('hidden');
-                    $('.csv-to-pdf-message').addClass('bg-green-100 text-green-800')
-                        .removeClass('hidden').text('PDFs generated successfully!');
+                    console.log(`Progress: ${progress}%, Processed: ${processed}, Total: ${total}, Completed: ${data.is_completed}`);
                     
-                    if (response.download_url) {
-                        $('.download-zip-button').attr('href', response.download_url);
-                        $('.csv-to-pdf-download').removeClass('hidden');
+                    progressBar.css('width', progress + '%').attr('aria-valuenow', progress);
+                    
+                    if (!data.is_completed) {
+                        // Еще есть пакеты для обработки
+                        progressText.text('Processing: ' + processed + ' of ' + total + ' documents (' + progress + '%)');
+                        
+                        // Обрабатываем следующий пакет
+                        setTimeout(function() {
+                            processBatch(processId, total);
+                        }, 1000);
                     } else {
-                        $('.csv-to-pdf-message').addClass('bg-red-100 text-red-800')
-                            .removeClass('bg-green-100 text-green-800')
-                            .text('Error: Download URL not provided');
-                        console.error('Download URL not provided in response:', response);
+                        // Все пакеты обработаны
+                        progressText.text('Completed! All documents processed successfully.');
+                        
+                        // Показываем кнопку скачивания
+                        $('.csv-to-pdf-loader').addClass('hidden');
+                        $('.csv-to-pdf-message').addClass('bg-green-100 text-green-800')
+                            .removeClass('hidden').text('PDFs generated successfully!');
+                        
+                        if (data.download_url) {
+                            $('.download-zip-button').attr('href', data.download_url);
+                            $('.csv-to-pdf-download').removeClass('hidden');
+                        } else {
+                            $('.csv-to-pdf-message').addClass('bg-red-100 text-red-800')
+                                .removeClass('bg-green-100 text-green-800')
+                                .text('Error: Download URL not provided');
+                            console.error('Download URL not provided in response:', response);
+                        }
                     }
+                } else {
+                    // В случае ошибки
+                    var errorMessage = response.data && response.data.message ? response.data.message : 'Unknown error during batch processing';
+                    console.error('Batch processing error:', errorMessage);
+                    
+                    $('.csv-to-pdf-loader').addClass('hidden');
+                    $('.csv-to-pdf-progress').addClass('hidden');
+                    $('.submit-button').removeClass('hidden');
+                    $('.csv-to-pdf-message').addClass('bg-red-100 text-red-800')
+                        .removeClass('hidden')
+                        .text('Error: ' + errorMessage);
                 }
-            } else {
-                // В случае ошибки
-                var errorMessage = response.message || 'Unknown error during batch processing';
-                console.error('Batch processing error:', errorMessage);
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', status, error);
+                console.error('Response text:', xhr.responseText);
                 
                 $('.csv-to-pdf-loader').addClass('hidden');
                 $('.csv-to-pdf-progress').addClass('hidden');
                 $('.submit-button').removeClass('hidden');
                 $('.csv-to-pdf-message').addClass('bg-red-100 text-red-800')
                     .removeClass('hidden')
-                    .text('Error: ' + errorMessage);
+                    .text('Server error: ' + error + '. Check browser console for details.');
             }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX error:', status, error);
-            console.error('Response text:', xhr.responseText);
-            
-            $('.csv-to-pdf-loader').addClass('hidden');
-            $('.csv-to-pdf-progress').addClass('hidden');
-            $('.submit-button').removeClass('hidden');
-            $('.csv-to-pdf-message').addClass('bg-red-100 text-red-800')
-                .removeClass('hidden')
-                .text('Server error: ' + error + '. Check browser console for details.');
-        }
-    });
-}
+        });
+    }
      
     // Add click handler for download button to reload page after download starts
     $('.download-zip-button').on('click', function() {

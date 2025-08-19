@@ -217,20 +217,32 @@ class CSV_To_PDF_Generator {
     public function process_batch() {
         // Verify nonce
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'csv_to_pdf_nonce')) {
-            wp_send_json_error('Security check failed');
+            wp_send_json_error(['message' => 'Security check failed']);
+            return;
         }
         
         if (!isset($_POST['process_id'])) {
             wp_send_json_error(['message' => 'Process ID is missing']);
+            return;
         }
         
-        require_once CSV_TO_PDF_PATH . 'includes/batch-processor.php';
-        $result = Batch_Processor::process_next_batch($_POST['process_id']);
+        $process_id = sanitize_text_field($_POST['process_id']);
         
-        if ($result['success']) {
+        // Для отладки
+        error_log('Received batch processing request for ID: ' . $process_id);
+        
+        require_once CSV_TO_PDF_PATH . 'includes/batch-processor.php';
+        $result = Batch_Processor::process_next_batch($process_id);
+        
+        // Логируем результат
+        error_log('Batch processing result: ' . json_encode($result));
+        
+        if (isset($result['success']) && $result['success']) {
             wp_send_json_success($result);
         } else {
-            wp_send_json_error($result);
+            wp_send_json_error([
+                'message' => isset($result['message']) ? $result['message'] : 'Unknown error during batch processing'
+            ]);
         }
         
         wp_die();
