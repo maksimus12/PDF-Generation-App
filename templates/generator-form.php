@@ -108,6 +108,26 @@ if (!defined('ABSPATH')) {
                 <span class="ml-3 text-gray-700"><?php _e('Generating PDFs, please wait...', 'csv-to-pdf-generator'); ?></span>
             </div>
             
+            <div class="csv-to-pdf-progress hidden mt-6">
+                <div class="relative pt-1">
+                    <div class="flex mb-2 items-center justify-between">
+                        <div>
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+                                Progress
+                            </span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-semibold inline-block text-blue-600 progress-text">
+                                Processing...
+                            </span>
+                        </div>
+                    </div>
+                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                        <div class="progress-bar shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500" style="width: 0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Кнопка скачивания -->
             <div class="csv-to-pdf-download hidden mt-6">
                 <a href="#" id="download-zip-button" class="download-zip-button flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors w-full sm:w-auto" target="_blank">

@@ -56,6 +56,9 @@ jQuery(document).ready(function($) {
         var downloadSection = form.find('.csv-to-pdf-download');
         var downloadButton = form.find('.download-zip-button');
         var submitButton = form.find('.submit-button');
+        var progressBar = form.find('.progress-bar');
+        var progressSection = form.find('.csv-to-pdf-progress');
+        var progressText = form.find('.progress-text');
         
         // Очистка предыдущих сообщений
         messageDiv.empty().addClass('hidden').removeClass('bg-red-100 text-red-800 bg-green-100 text-green-800');
@@ -87,8 +90,11 @@ jQuery(document).ready(function($) {
         loader.removeClass('hidden');
         submitButton.addClass('hidden');
         downloadSection.addClass('hidden');
+        progressSection.removeClass('hidden');
+        progressBar.css('width', '0%').attr('aria-valuenow', 0);
+        progressText.text('Preparing data...');
         
-        // Отправка формы через AJAX
+        // Начинаем процесс обработки
         $.ajax({
             url: csv_to_pdf_vars.ajax_url,
             type: 'POST',
@@ -97,21 +103,28 @@ jQuery(document).ready(function($) {
             contentType: false,
             processData: false,
             success: function(response) {
-                loader.addClass('hidden');
-
                 if (response.success) {
-                    messageDiv.addClass('bg-green-100 text-green-800').removeClass('hidden').text('PDFs generated successfully!');
-                    
-                    // Показать кнопку скачивания и установить ссылку
-                    downloadButton.attr('href', response.data.download_url);
-                    downloadSection.removeClass('hidden');
+                    // Если большой CSV-файл, используем пакетную обработку
+                    if (response.data.process_id) {
+                        processBatch(response.data.process_id);
+                    } else {
+                        // Для небольших файлов - сразу показываем результат
+                        loader.addClass('hidden');
+                        progressSection.addClass('hidden');
+                        messageDiv.addClass('bg-green-100 text-green-800').removeClass('hidden').text('PDFs generated successfully!');
+                        downloadButton.attr('href', response.data.download_url);
+                        downloadSection.removeClass('hidden');
+                    }
                 } else {
-                    messageDiv.addClass('bg-red-100 text-red-800').removeClass('hidden').text('Error: ' + response.data);
+                    loader.addClass('hidden');
+                    progressSection.addClass('hidden');
                     submitButton.removeClass('hidden');
+                    messageDiv.addClass('bg-red-100 text-red-800').removeClass('hidden').text('Error: ' + response.data);
                 }
             },
             error: function() {
                 loader.addClass('hidden');
+                progressSection.addClass('hidden');
                 submitButton.removeClass('hidden');
                 messageDiv.addClass('bg-red-100 text-red-800').removeClass('hidden').text('Server error. Please try again later.');
             }
@@ -120,7 +133,62 @@ jQuery(document).ready(function($) {
         return false;
     });
     
-     // Add click handler for download button to reload page after download starts
+    // Функция для обработки одного пакета
+    function processBatch(processId) {
+        $.ajax({
+            url: csv_to_pdf_vars.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'process_batch',
+                nonce: csv_to_pdf_vars.nonce,
+                process_id: processId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Обновляем прогресс
+                    var progressBar = $('.progress-bar');
+                    var progressText = $('.progress-text');
+                    
+                    progressBar.css('width', response.progress + '%').attr('aria-valuenow', response.progress);
+                    
+                    if (!response.is_completed) {
+                        // Еще есть пакеты для обработки
+                        progressText.text('Processing: ' + response.processed + ' of ' + response.total + ' documents (' + response.progress + '%)');
+                        
+                        // Обрабатываем следующий пакет
+                        setTimeout(function() {
+                            processBatch(processId);
+                        }, 1000);
+                    } else {
+                        // Все пакеты обработаны
+                        progressText.text('Completed! All documents processed successfully.');
+                        
+                        // Показываем кнопку скачивания
+                        $('.csv-to-pdf-loader').addClass('hidden');
+                        $('.csv-to-pdf-message').addClass('bg-green-100 text-green-800').removeClass('hidden').text('PDFs generated successfully!');
+                        
+                        $('.download-zip-button').attr('href', response.download_url);
+                        $('.csv-to-pdf-download').removeClass('hidden');
+                    }
+                } else {
+                    // В случае ошибки
+                    $('.csv-to-pdf-loader').addClass('hidden');
+                    $('.csv-to-pdf-progress').addClass('hidden');
+                    $('.submit-button').removeClass('hidden');
+                    $('.csv-to-pdf-message').addClass('bg-red-100 text-red-800').removeClass('hidden').text('Error: ' + response.message);
+                }
+            },
+            error: function() {
+                $('.csv-to-pdf-loader').addClass('hidden');
+                $('.csv-to-pdf-progress').addClass('hidden');
+                $('.submit-button').removeClass('hidden');
+                $('.csv-to-pdf-message').addClass('bg-red-100 text-red-800').removeClass('hidden').text('Server error. Please try again later.');
+            }
+        });
+    }
+     
+    // Add click handler for download button to reload page after download starts
     $('.download-zip-button').on('click', function() {
         // Set a short timeout to allow the download to start before reloading
         setTimeout(function() {

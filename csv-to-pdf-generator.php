@@ -12,7 +12,13 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+
 // Define plugin constants
+
+@ini_set('memory_limit', '256M');
+@ini_set('max_execution_time', '300');
+@ini_set('upload_max_filesize', '20M');
+@ini_set('post_max_size', '20M');
 
 define('CSV_TO_PDF_PATH', plugin_dir_path(__FILE__));
 define('CSV_TO_PDF_URL', plugin_dir_url(__FILE__));
@@ -52,6 +58,10 @@ class CSV_To_PDF_Generator {
         add_action('wp_ajax_nopriv_process_csv_to_pdf', array($this, 'process_csv_to_pdf'));
         add_action('wp_ajax_get_template_info', array($this, 'get_template_info'));
         add_action('wp_ajax_nopriv_get_template_info', array($this, 'get_template_info'));
+        
+        // Добавляем обработчик для пакетной обработки
+        add_action('wp_ajax_process_batch', array($this, 'process_batch'));
+        add_action('wp_ajax_nopriv_process_batch', array($this, 'process_batch'));
     }
     
     // Initialize plugin
@@ -134,7 +144,7 @@ class CSV_To_PDF_Generator {
         
         wp_die();
     }
-    // AJAX handler for processing CSV to PDF
+   // AJAX handler for processing CSV to PDF
     public function process_csv_to_pdf() {
         // Verify nonce
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'csv_to_pdf_nonce')) {
@@ -174,20 +184,54 @@ class CSV_To_PDF_Generator {
             
             $data = $csv_processor->process();
             
-            // Generate PDFs
-            $pdf_generator = new PDF_Generator();
-            $pdf_files = $pdf_generator->generate_pdfs($data, $template_id);
-            
-            // Create ZIP archive with all PDFs
-            $zip_file = $pdf_generator->create_zip($pdf_files);
-            
-            // Send download URL
-            wp_send_json_success(array(
-                'download_url' => $zip_file
-            ));
+            // Если файл содержит более 20 строк, используем пакетную обработку
+            if (count($data) > 20) {
+                require_once CSV_TO_PDF_PATH . 'includes/batch-processor.php';
+                $process_id = Batch_Processor::start_batch_process($data, $template_id);
+                
+                wp_send_json_success(array(
+                    'process_id' => $process_id,
+                    'total_items' => count($data)
+                ));
+            } else {
+                // Для небольших файлов используем существующий код
+                $pdf_generator = new PDF_Generator();
+                $pdf_files = $pdf_generator->generate_pdfs($data, $template_id);
+                
+                // Create ZIP archive with all PDFs
+                $zip_file = $pdf_generator->create_zip($pdf_files);
+                
+                // Send download URL
+                wp_send_json_success(array(
+                    'download_url' => $zip_file
+                ));
+            }
             
         } catch (Exception $e) {
             wp_send_json_error($e->getMessage());
+        }
+        
+        wp_die();
+    }
+    
+    // AJAX handler for batch processing
+    public function process_batch() {
+        // Verify nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'csv_to_pdf_nonce')) {
+            wp_send_json_error('Security check failed');
+        }
+        
+        if (!isset($_POST['process_id'])) {
+            wp_send_json_error(['message' => 'Process ID is missing']);
+        }
+        
+        require_once CSV_TO_PDF_PATH . 'includes/batch-processor.php';
+        $result = Batch_Processor::process_next_batch($_POST['process_id']);
+        
+        if ($result['success']) {
+            wp_send_json_success($result);
+        } else {
+            wp_send_json_error($result);
         }
         
         wp_die();
