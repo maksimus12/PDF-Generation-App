@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CSV to PDF Generator
  * Description: Generates multiple PDF documents from CSV file
- * Version: 1.0
+ * Version: 1.1
  * Author: Maxim Diacenko
  * Text Domain: csv-to-pdf-generator
  */
@@ -50,6 +50,8 @@ class CSV_To_PDF_Generator {
         // AJAX handlers
         add_action('wp_ajax_process_csv_to_pdf', array($this, 'process_csv_to_pdf'));
         add_action('wp_ajax_nopriv_process_csv_to_pdf', array($this, 'process_csv_to_pdf'));
+        add_action('wp_ajax_get_template_info', array($this, 'get_template_info'));
+        add_action('wp_ajax_nopriv_get_template_info', array($this, 'get_template_info'));
     }
     
     // Initialize plugin
@@ -61,6 +63,13 @@ class CSV_To_PDF_Generator {
         require_once CSV_TO_PDF_PATH . 'includes/functions.php';
         require_once CSV_TO_PDF_PATH . 'includes/csv-processor.php';
         require_once CSV_TO_PDF_PATH . 'includes/pdf-generator.php';
+        require_once CSV_TO_PDF_PATH . 'includes/template-manager.php';
+        
+        // Create templates directory if not exists
+        $templates_dir = CSV_TO_PDF_PATH . 'templates/pdf-templates/';
+        if (!file_exists($templates_dir)) {
+            wp_mkdir_p($templates_dir);
+        }
     }
     
     // Register admin scripts and styles
@@ -83,12 +92,38 @@ class CSV_To_PDF_Generator {
     // Shortcode function
     public function generator_shortcode($atts) {
         $atts = shortcode_atts(array(
-            'title' => 'CSV to PDF Invitation',
+            'title' => 'CSV to PDF Generator',
         ), $atts, 'csv_to_pdf_generator');
         
         ob_start();
         include CSV_TO_PDF_PATH . 'templates/generator-form.php';
         return ob_get_clean();
+    }
+    
+    // AJAX handler for getting template info
+    public function get_template_info() {
+        // Verify nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'csv_to_pdf_nonce')) {
+            wp_send_json_error('Security check failed');
+        }
+        
+        if (!isset($_POST['template_id'])) {
+            wp_send_json_error('Template ID is missing');
+        }
+        
+        $template_id = sanitize_text_field($_POST['template_id']);
+        
+        // Get template info
+        $template_manager = new Template_Manager();
+        $template_meta = $template_manager->get_template_meta($template_id);
+        
+        if ($template_meta) {
+            wp_send_json_success($template_meta);
+        } else {
+            wp_send_json_error('Template not found');
+        }
+        
+        wp_die();
     }
     
     // AJAX handler for processing CSV to PDF
@@ -104,13 +139,36 @@ class CSV_To_PDF_Generator {
                 throw new Exception('Please upload a valid CSV file');
             }
             
+            // Get template ID
+            $template_id = isset($_POST['template_id']) ? sanitize_text_field($_POST['template_id']) : '';
+            if (empty($template_id)) {
+                throw new Exception('No template selected');
+            }
+            
+            // Check if template exists
+            $template_manager = new Template_Manager();
+            $template_meta = $template_manager->get_template_meta($template_id);
+            if (!$template_meta) {
+                throw new Exception('Selected template not found');
+            }
+            
             // Process CSV file
             $csv_processor = new CSV_Processor($_FILES['csv_file']['tmp_name']);
+            
+            // Validate CSV against template requirements
+            if (!empty($template_meta['required_fields'])) {
+                try {
+                    $csv_processor->validate(array_keys($template_meta['required_fields']));
+                } catch (Exception $e) {
+                    throw new Exception('CSV validation error: ' . $e->getMessage());
+                }
+            }
+            
             $data = $csv_processor->process();
             
             // Generate PDFs
             $pdf_generator = new PDF_Generator();
-            $pdf_files = $pdf_generator->generate_pdfs($data);
+            $pdf_files = $pdf_generator->generate_pdfs($data, $template_id);
             
             // Create ZIP archive with all PDFs
             $zip_file = $pdf_generator->create_zip($pdf_files);

@@ -17,6 +17,40 @@ if (!defined('ABSPATH')) {
     
     <div class="csv-to-pdf-form">
         <form id="csv-to-pdf-form" enctype="multipart/form-data">
+            <!-- Выбор шаблона -->
+            <div class="mb-6">
+                <label for="template_id" class="block text-sm font-medium text-gray-700 mb-2">
+                    <?php _e('Select Template', 'csv-to-pdf-generator'); ?>
+                </label>
+                
+                <select id="template_id" name="template_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                    <?php 
+                    $template_manager = new Template_Manager();
+                    $templates = $template_manager->get_templates();
+                    
+                    if (empty($templates)) {
+                        echo '<option value="">' . __('No templates available', 'csv-to-pdf-generator') . '</option>';
+                    } else {
+                        foreach ($templates as $id => $template) : 
+                        ?>
+                            <option value="<?php echo esc_attr($id); ?>">
+                                <?php echo esc_html($template['name']); ?>
+                            </option>
+                        <?php endforeach;
+                    }
+                    ?>
+                </select>
+            </div>
+            
+            <!-- Информация о требуемых полях CSV -->
+            <div class="mb-6" id="template-info">
+                <h4 class="font-medium mb-2"><?php _e('Required CSV Fields:', 'csv-to-pdf-generator'); ?></h4>
+                <div id="required-fields" class="text-sm bg-gray-50 p-3 border rounded">
+                    <!-- JS заполнит эту секцию -->
+                </div>
+            </div>
+
+            <!-- Загрузка файла -->
             <div class="mb-6">
                 <label for="csv_file" class="block text-sm font-medium text-gray-700 mb-2">
                     <?php _e('Upload CSV File', 'csv-to-pdf-generator'); ?>
@@ -110,32 +144,50 @@ function updateFileDisplay(file) {
     }
 }
 
-// Скрипт для обработки выбора файла через диалог
-document.getElementById('csv_file').addEventListener('change', function(e) {
-    var file = e.target.files[0] || null;
-    updateFileDisplay(file);
-});
-
-// Кнопка удаления файла
-document.getElementById('remove-file').addEventListener('click', function() {
-    var fileInput = document.getElementById('csv_file');
-    fileInput.value = ''; // Очищаем input
-    updateFileDisplay(null);
-});
-
-
-
-// Добавляем обработку Drag & Drop
-document.addEventListener('DOMContentLoaded', function() {
-    var downloadButton = document.getElementById('download-zip-button');
-    if(downloadButton) {
-        downloadButton.addEventListener('click', function() {
-            // Добавляем небольшую задержку, чтобы скачивание успело начаться
-            setTimeout(resetForm, 500);
-        });
-    }
+function updateTemplateInfo() {
+    var templateId = document.getElementById('template_id').value;
     
-    // Скрипт для обработки выбора файла через диалог
+    if (!templateId) return;
+    
+    // AJAX запрос для получения информации о шаблоне
+    jQuery.ajax({
+        url: csv_to_pdf_vars.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'get_template_info',
+            nonce: csv_to_pdf_vars.nonce,
+            template_id: templateId
+        },
+        success: function(response) {
+            if (response.success) {
+                var requiredFieldsDiv = document.getElementById('required-fields');
+                var fieldsHTML = '';
+                
+                // Создаем HTML для требуемых полей
+                if (response.data.required_fields && Object.keys(response.data.required_fields).length > 0) {
+                    var fieldsList = '';
+                    for (var field in response.data.required_fields) {
+                        fieldsList += '<div class="mb-1"><code class="bg-gray-200 px-1 py-0.5 rounded">' + field + '</code> - ' + response.data.required_fields[field] + '</div>';
+                    }
+                    fieldsHTML = fieldsList;
+                } else {
+                    fieldsHTML = '<p>No required fields specified for this template.</p>';
+                }
+                
+                requiredFieldsDiv.innerHTML = fieldsHTML;
+            }
+        }
+    });
+}
+
+// Обновить информацию о шаблоне при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    updateTemplateInfo();
+    
+    // Обновить информацию при изменении выбора шаблона
+    document.getElementById('template_id').addEventListener('change', updateTemplateInfo);
+    
+    // Обработка выбора файла через диалог
     document.getElementById('csv_file').addEventListener('change', function(e) {
         var file = e.target.files[0] || null;
         updateFileDisplay(file);
@@ -202,84 +254,5 @@ document.addEventListener('DOMContentLoaded', function() {
             messageDiv.classList.remove('hidden');
         }
     }
-});
-
-
-// Обновление скриптов для работы с новыми классами
-jQuery(document).ready(function($) {
-    $('#csv-to-pdf-form').on('submit', function(e) {
-        e.preventDefault();
-        
-        var form = $(this);
-        var formData = new FormData(form[0]);
-        var messageDiv = form.find('.csv-to-pdf-message');
-        var loader = form.find('.csv-to-pdf-loader');
-        var downloadSection = form.find('.csv-to-pdf-download');
-        var downloadButton = form.find('.download-zip-button');
-          var submitButton = form.find('button[type="submit"]');
-        
-        // Очистка предыдущих сообщений
-        messageDiv.empty().addClass('hidden').removeClass('bg-red-100 text-red-800 bg-green-100 text-green-800');
-        
-        // Валидация файла
-        var fileInput = form.find('input[name="csv_file"]')[0];
-        if (fileInput.files.length === 0) {
-            messageDiv.addClass('bg-red-100 text-red-800').removeClass('hidden').text('Please select a CSV file');
-            return false;
-        }
-        
-        // Проверка типа файла
-        var fileName = fileInput.files[0].name;
-        var fileExt = fileName.split('.').pop().toLowerCase();
-        
-        if (fileExt !== 'csv') {
-            messageDiv.addClass('bg-red-100 text-red-800').removeClass('hidden').text('Please upload a valid CSV file');
-            return false;
-        }
-        
-        // Показать загрузку
-        loader.removeClass('hidden');
-        submitButton.addClass('hidden');
-        downloadSection.addClass('hidden');
-        
-        // Отправка формы через AJAX
-        $.ajax({
-            url: csv_to_pdf_vars.ajax_url,
-            type: 'POST',
-            data: formData,
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                loader.addClass('hidden');
-
-                if (response.success) {
-                    messageDiv.addClass('bg-green-100 text-green-800').removeClass('hidden').text('PDFs generated successfully!');
-                    
-                    // Показать кнопку скачивания и установить ссылку
-                    downloadButton.attr('href', response.data.download_url);
-                    downloadSection.removeClass('hidden');
-                } else {
-                    messageDiv.addClass('bg-red-100 text-red-800').removeClass('hidden').text('Error: ' + response.data);
-                    submitButton.removeClass('hidden');
-                }
-            },
-            error: function() {
-                loader.addClass('hidden');
-                submitButton.removeClass('hidden');
-                messageDiv.addClass('bg-red-100 text-red-800').removeClass('hidden').text('Server error. Please try again later.');
-            }
-        });
-        
-        return false;
-    });
-    
-     // Add click handler for download button to reload page after download starts
-    $('.download-zip-button').on('click', function() {
-        // Set a short timeout to allow the download to start before reloading
-        setTimeout(function() {
-            window.location.reload();
-        }, 1000); // 1 second delay
-    });
 });
 </script>

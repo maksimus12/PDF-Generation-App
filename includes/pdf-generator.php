@@ -10,7 +10,6 @@ if (!defined('ABSPATH')) {
 
 require_once plugin_dir_path(__FILE__) . 'mpdf-config.php';
 
-
 class PDF_Generator {
     private $mpdf;
     private $uploads_dir;
@@ -33,68 +32,72 @@ class PDF_Generator {
     }
     
     /**
-     * Generate multiple PDFs from data array
+     * Generate multiple PDFs from data array using a specific template
      */
-    public function generate_pdfs($data) {
+    public function generate_pdfs($data, $template_id) {
+        // Путь к шаблону
+        $template_path = CSV_TO_PDF_PATH . 'templates/pdf-templates/' . $template_id . '.php';
+        
+        if (!file_exists($template_path)) {
+            throw new Exception('Template file not found');
+        }
+        
+        // Получаем метаданные шаблона
+        $template_manager = new Template_Manager();
+        $template_meta = $template_manager->get_template_meta($template_id);
+        
         $pdf_files = array();
         
         foreach ($data as $index => $row) {
-            // Create a unique filename
-            $filename = $this->uploads_dir . 'document_' . ($index + 1) . '_' . $row['fullNameEn'] . '.pdf';
+            // Создаем уникальное имя файла на основе первого поля или индекса
+            $first_field = reset($row);
+            $filename = $this->uploads_dir . 'document_' . ($index + 1) . '_' . sanitize_title($first_field) . '.pdf';
             
-            // Initialize mPDF
-             $mpdf = new \Mpdf\Mpdf([
-                        'mode' => 'utf-8',
-                        'format' => 'A4',
-                        'margin_left' => 10,
-                        'margin_right' => 10,
-                        'margin_top' => 5,
-                        'margin_bottom' => 0,
-                        'margin_header' => 0,
-                        'margin_footer' => 0,
-                        'default_font_size' => 12,
-                        'fontDir' => [
-                            plugin_dir_path(dirname(__FILE__)) . 'fonts/',
-                            plugin_dir_path(dirname(__FILE__)) . 'fonts/dejavu/',
-                        ],
-                        'fontdata' => [
-                            'cambria' => [
-                                'R' => 'Cambria.ttf',
-                                'B' => 'Cambria-Bold.ttf',
-                                'I' => 'Cambria-Italic.ttf',
-                                'BI' => 'Cambria-BoldItalic.ttf',
-                            ],
-                            'dejavuserifcondensed' => [
-                                'R' => 'dejavu/DejaVuSerifCondensed.ttf',
-                                'B' => 'dejavu/DejaVuSerifCondensed-Bold.ttf',
-                                'I' => 'dejavu/DejaVuSerifCondensed-Italic.ttf',
-                                'BI' => 'dejavu/DejaVuSerifCondensed-BoldItalic.ttf',
-                            ]
-                        ],
-                        'default_font' => 'cambria',
-                        'tempDir' => $this->uploads_dir . 'tmp/'
-                    ]);
-                    
+            // Инициализируем mPDF с настройками шаблона
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'margin_left' => 10,
+                'margin_right' => 10,
+                'margin_top' => 5,
+                'margin_bottom' => 0,
+                'margin_header' => 0,
+                'margin_footer' => 10,
+                'default_font_size' => 12,
+                'fontDir' => [
+                    plugin_dir_path(dirname(__FILE__)) . 'fonts/',
+                    plugin_dir_path(dirname(__FILE__)) . 'fonts/dejavu/',
+                ],
+                'fontdata' => [
+                    'cambria' => [
+                        'R' => 'Cambria.ttf',
+                        'B' => 'Cambria-Bold.ttf',
+                        'I' => 'Cambria-Italic.ttf',
+                        'BI' => 'Cambria-BoldItalic.ttf',
+                    ],
+                    'dejavuserifcondensed' => [
+                        'R' => 'dejavu/DejaVuSerifCondensed.ttf',
+                        'B' => 'dejavu/DejaVuSerifCondensed-Bold.ttf',
+                        'I' => 'dejavu/DejaVuSerifCondensed-Italic.ttf',
+                        'BI' => 'dejavu/DejaVuSerifCondensed-BoldItalic.ttf',
+                    ]
+                ],
+                'default_font' => $template_meta['default_font'] ?? 'dejavuserifcondensed',
+                'tempDir' => $this->uploads_dir . 'tmp/'
+            ]);
             
-            // Apply font configuration
-            $mpdf = csv_to_pdf_configure_fonts($mpdf);
-            
-            // Set document metadata
-            $mpdf->SetTitle(isset($row['title']) ? $row['title'] : 'Document ' . ($index + 1));
-            $mpdf->SetAuthor('CSV to PDF Generator');
-            
-            // Generate PDF content from template
+            // Генерируем PDF из шаблона
             ob_start();
-            include CSV_TO_PDF_PATH . 'templates/pdf-template.php';
+            include $template_path;
             $html = ob_get_clean();
             
-            // Write to PDF
-            $mpdf->WriteHTML($html);
+            if (isset($footer_html)) {
+            $mpdf->SetHTMLFooter($footer_html);
+            }
             
-            // Save PDF
+            $mpdf->WriteHTML($html);
             $mpdf->Output($filename, 'F');
             
-            // Add to files array
             $pdf_files[] = $filename;
         }
         

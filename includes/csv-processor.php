@@ -45,7 +45,7 @@ class CSV_Processor {
     }
     
     /**
-     * Validate CSV file structure
+     * Validate CSV file structure against required fields
      */
     public function validate($required_headers = array()) {
         if (($handle = fopen($this->file_path, "r")) !== FALSE) {
@@ -55,10 +55,15 @@ class CSV_Processor {
             
             // Check required headers
             if (!empty($required_headers)) {
+                $missing_fields = array();
                 foreach ($required_headers as $required) {
                     if (!in_array($required, $header)) {
-                        return false;
+                        $missing_fields[] = $required;
                     }
+                }
+                
+                if (!empty($missing_fields)) {
+                    throw new Exception('Missing required fields: ' . implode(', ', $missing_fields));
                 }
             }
             
