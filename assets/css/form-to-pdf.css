@@ -1,0 +1,151 @@
+/**
+ * CSS for Form to PDF Generator
+ */
+
+.pdf-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.pdf-form {
+    margin-top: 20px;
+}
+
+.pdf-form-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.pdf-form-group {
+    margin-bottom: 20px;
+}
+
+.pdf-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.pdf-form-group input[type="text"],
+.pdf-form-group input[type="email"],
+.pdf-form-group input[type="tel"],
+.pdf-form-group input[type="date"],
+.pdf-form-group select,
+.pdf-form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.pdf-form-group input:focus,
+.pdf-form-group select:focus,
+.pdf-form-group textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 3px rgba(76, 175, 80, 0.3);
+}
+
+.pdf-form-description {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.pdf-form-message {
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 3px;
+}
+
+.pdf-form-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.pdf-form-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.pdf-form-loader {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.pdf-form-loader .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 2s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.pdf-form-download {
+    margin: 15px 0;
+}
+
+.pdf-form-submit {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pdf-form-submit:hover {
+    background-color: #45a049;
+}
+
+.pdf-download-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pdf-download-button:hover {
+    background-color: #45a049;
+    color: white;
+}
+
+.pdf-form-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    border: 1px solid #f5c6cb;
+}
+
+.pdf-form-required {
+    color: #dc3545;
+    margin-left: 3px;
+}
+
+.hidden {
+    display: none;
+}

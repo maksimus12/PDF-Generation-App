@@ -23,6 +23,7 @@ define('CSV_TO_PDF_PATH', plugin_dir_path(__FILE__));
 define('CSV_TO_PDF_URL', plugin_dir_url(__FILE__));
 define('CSV_TO_PDF_VERSION', '1.0.0');
 
+
 // Include the autoloader from composer
 if (file_exists(CSV_TO_PDF_PATH . 'vendor/autoload.php')) {
     require_once CSV_TO_PDF_PATH . 'vendor/autoload.php';
@@ -87,6 +88,11 @@ class CSV_To_PDF_Generator {
         }
     }
     
+    
+    
+    
+    
+    
     // Register admin scripts and styles
     public function register_admin_scripts() {
         wp_enqueue_style('csv-to-pdf-admin', CSV_TO_PDF_URL . 'assets/css/admin.css', array(), CSV_TO_PDF_VERSION);
@@ -103,6 +109,7 @@ class CSV_To_PDF_Generator {
             'nonce' => wp_create_nonce('csv_to_pdf_nonce')
         ));
     }
+    
     
     // Shortcode function
     public function generator_shortcode($atts) {
@@ -249,6 +256,8 @@ class CSV_To_PDF_Generator {
     }
 }
 
+
+
 // Initialize plugin
 function csv_to_pdf_generator_init() {
     return CSV_To_PDF_Generator::get_instance();
@@ -256,3 +265,56 @@ function csv_to_pdf_generator_init() {
 
 // Start the plugin
 csv_to_pdf_generator_init();
+
+// Initialize Form to PDF functionality
+require_once CSV_TO_PDF_PATH . 'includes/form-to-pdf/class-form-to-pdf.php';
+
+// Register directories for form templates
+add_action('init', function() {
+    // Create form templates directory if not exists
+    $form_templates_dir = CSV_TO_PDF_PATH . 'templates/form-templates/';
+    if (!file_exists($form_templates_dir)) {
+        wp_mkdir_p($form_templates_dir);
+    }
+    
+    // Create tmp directory for mPDF
+    $uploads = wp_upload_dir();
+    $tmp_dir = $uploads['basedir'] . '/csv-to-pdf-generator/tmp/';
+    if (!file_exists($tmp_dir)) {
+        wp_mkdir_p($tmp_dir);
+    }
+    
+    // Add default initialization data that can be used across the plugin
+    global $pdf_form_defaults;
+    $pdf_form_defaults = array(
+        'datetime' => '2025-08-19 11:51:56', // Текущая дата/время
+        'user' => 'maksimus12', // Текущий пользователь
+        'version' => '1.1.0', // Версия модуля форм
+    );
+});
+
+/**
+ * Get current user and date information for PDF generation
+ * This can be used in form processors and PDF templates
+ */
+function get_pdf_form_user_data() {
+    // Get current user info if logged in
+    $current_user = wp_get_current_user();
+    $username = $current_user->ID ? $current_user->user_login : 'maksimus12';
+    
+    return array(
+        'username' => $username,
+        'datetime' => '2025-08-19 11:51:56', // Используем фиксированную дату/время
+        'timestamp' => time(),
+        'default_date' => '2025-08-19',
+        'default_user' => 'maksimus12'
+    );
+}
+
+// Initialize Form to PDF
+function form_to_pdf_init() {
+    return Form_To_PDF::get_instance();
+}
+
+// Start the Form to PDF module
+add_action('init', 'form_to_pdf_init');
