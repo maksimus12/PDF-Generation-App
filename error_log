@@ -354,3 +354,6 @@
 [19-Aug-2025 11:57:03 UTC] PHP Warning:  Constant WP_DEBUG already defined in /home/unidgmd/public_html/appointments.uni-dg.md/wp-config.php on line 89
 [19-Aug-2025 11:57:03 UTC] PHP Warning:  Constant WP_DEBUG_LOG already defined in /home/unidgmd/public_html/appointments.uni-dg.md/wp-config.php on line 90
 [19-Aug-2025 11:57:03 UTC] PHP Warning:  Constant WP_DEBUG_DISPLAY already defined in /home/unidgmd/public_html/appointments.uni-dg.md/wp-config.php on line 91
+[19-Aug-2025 12:20:42 UTC] PHP Warning:  Constant WP_DEBUG already defined in /home/unidgmd/public_html/appointments.uni-dg.md/wp-config.php on line 89
+[19-Aug-2025 12:20:42 UTC] PHP Warning:  Constant WP_DEBUG_LOG already defined in /home/unidgmd/public_html/appointments.uni-dg.md/wp-config.php on line 90
+[19-Aug-2025 12:20:42 UTC] PHP Warning:  Constant WP_DEBUG_DISPLAY already defined in /home/unidgmd/public_html/appointments.uni-dg.md/wp-config.php on line 91

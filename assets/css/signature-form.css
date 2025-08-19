@@ -1,0 +1,62 @@
+/**
+ * CSS for Signature Form
+ */
+
+.signature-container {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    position: relative;
+    background-color: #fff;
+}
+
+.signature-pad {
+    width: 100%;
+    height: 200px;
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAMAAAC6V+0/AAAARVBMVEUAAAD/AAD///////////////////////////////////////////////////////////////////////////////////////////////+0NlMZAAAAFnRSTlMABwgMDxwcJSknRGRmaKiss8Da6Or6zpijfQAAAI1JREFUGNNl0FESwiAMBdA3lAKVluJK9z8qMA7+1Jm+GSfJTUJ6Vup3KJM5iJHZPKMIkKdccp2s8shVqicZV9YwsawZvFW6xWnxqVURUW+B+lRYl3dqpXy6esUyGBFFjFHETBgS0GJBUMMYgIKvvdolxKrxfKw9We1lmIPm4OeA7VKXcQ4XWmDz4bz+xxtDPiIVHJkIpQAAAABJRU5ErkJggg=='), pointer;
+}
+
+.signature-actions {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.pdf-form-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.pdf-form-button-secondary {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.pdf-form-button-secondary:hover {
+    background-color: #e1e1e1;
+}
+
+/* Индикатор для пользователя */
+.signature-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.05);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 4px;
+    z-index: 10;
+}
+
+.signature-container:hover::before {
+    opacity: 1;
+}

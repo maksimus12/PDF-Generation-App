@@ -47,6 +47,11 @@ class Form_Processor {
         $form_data['generated_by'] = $user_data['username'];
         $form_data['generated_date'] = $user_data['datetime'];
         
+          if (isset($form_data['signature']) && !empty($form_data['signature'])) {
+            // Signature is already in base64 format
+            // We leave it as is since mPDF can handle base64 images directly
+        }
+        
         // Generate PDF (используем наш собственный метод вместо вызова метода из PDF_Generator)
         $pdf_file = $this->generate_pdf_from_form($form_data, $pdf_template);
         
