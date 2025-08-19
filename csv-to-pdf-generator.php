@@ -14,11 +14,10 @@ if (!defined('ABSPATH')) {
 
 
 // Define plugin constants
-
-@ini_set('memory_limit', '256M');
-@ini_set('max_execution_time', '300');
-@ini_set('upload_max_filesize', '20M');
-@ini_set('post_max_size', '20M');
+@ini_set('memory_limit', '512M');
+@ini_set('max_execution_time', '600'); // 10 минут
+@ini_set('upload_max_filesize', '50M');
+@ini_set('post_max_size', '50M');
 
 define('CSV_TO_PDF_PATH', plugin_dir_path(__FILE__));
 define('CSV_TO_PDF_URL', plugin_dir_url(__FILE__));
