@@ -4,7 +4,7 @@
  * Template ID: signed-document
  * Description: Template for documents with signature
  * Required Fields: full_name, document_date, document_title, document_content, signature
- * Default Font: dejavuserifcondensed
+ * Default Font: cambria
  */
 
 // Exit if accessed directly
@@ -22,7 +22,7 @@ $signature = isset($row['signature']) ? $row['signature'] : '';
 // CSS стили
 $css = "
 body {
-    font-family: serif;
+    font-family: Cambria, serif;
     font-size: 14px;
     line-height: 1.5;
     color: #000;
