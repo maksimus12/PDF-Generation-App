@@ -32,6 +32,34 @@ class PDF_Generator {
     }
     
     /**
+     * Получает путь к шаблону на основе языка
+     * 
+     * @param string $template_id ID шаблона
+     * @param string $language Код языка (ru, en, etc)
+     * @return string Путь к шаблону
+     */
+    private function get_template_path($template_id, $language = '') {
+        // Базовый путь к шаблону
+        $base_path = CSV_TO_PDF_PATH . 'templates/pdf-templates/' . $template_id . '.php';
+        
+        // Если язык не указан или это дефолтный язык, используем базовый шаблон
+        if (empty($language) || $language === 'ro') {
+            return file_exists($base_path) ? $base_path : false;
+        }
+        
+        // Путь к локализованному шаблону
+        $language_path = CSV_TO_PDF_PATH . 'templates/pdf-templates/languages/' . $language . '/' . $template_id . '.php';
+        
+        // Если существует локализованная версия, используем её, иначе - базовую
+        if (file_exists($language_path)) {
+            return $language_path;
+        }
+        
+        // Если локализованная версия не найдена, возвращаем базовую или false
+        return file_exists($base_path) ? $base_path : false;
+    }
+    
+    /**
      * Оптимизированный метод для генерации PDF
      * 
      * @param array $data Данные для генерации PDF
@@ -40,27 +68,31 @@ class PDF_Generator {
      * @return array Массив путей к сгенерированным PDF-файлам
      */
     public function generate_pdfs($data, $template_id, $start_index = 0) {
-        // Путь к шаблону
-        $template_path = CSV_TO_PDF_PATH . 'templates/pdf-templates/' . $template_id . '.php';
-        
-        if (!file_exists($template_path)) {
-            throw new Exception('Template file not found');
-        }
-        
-        // Получаем метаданные шаблона
-        $template_manager = new Template_Manager();
-        $template_meta = $template_manager->get_template_meta($template_id);
-        
         $pdf_files = array();
         
         foreach ($data as $index => $row) {
+            // Определяем язык из данных CSV
+            $language = isset($row['language']) ? strtolower(trim($row['language'])) : '';
+            
+            // Получаем путь к шаблону в зависимости от языка
+            $template_path = $this->get_template_path($template_id, $language);
+            
+            if (!$template_path || !file_exists($template_path)) {
+                throw new Exception('Template file not found: ' . $template_id . ' for language: ' . $language);
+            }
+            
+            // Получаем метаданные шаблона
+            $template_manager = new Template_Manager();
+            $template_meta = $template_manager->get_template_meta($template_id);
+            
             // Используем глобальный индекс для уникальных имен файлов
             $global_index = $start_index + $index;
             
             // Создаем уникальное имя файла с использованием глобального индекса и временной метки
             $first_field = reset($row);
             $timestamp = microtime(true);
-            $filename = $this->uploads_dir . 'document_' . $global_index . '_' . sanitize_title($first_field) . '_' . $timestamp . '.pdf';
+            $lang_suffix = !empty($language) ? '_' . $language : '';
+            $filename = $this->uploads_dir . 'document_' .$row['nameRo'] . '_' . $lang_suffix . '_' . $global_index . '.pdf';
             
             // Инициализируем mPDF для каждого документа отдельно, чтобы избежать утечек памяти
             $mpdf = new \Mpdf\Mpdf([

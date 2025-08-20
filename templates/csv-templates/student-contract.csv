@@ -1,2 +1,3 @@
-number,date,nameRo,birthDate,country,city,documentType,seria,documentNumber,documentId,phone,email,faculty,program,yearsNumber,yearsLetters,price
-12332,02/23/2023,MAXIM DIACENKO,02/23/2023,MOLDOVA,CHISINAU,Buletin,B,32424985702587309237,324872934newfds231287,67268060,maks.diacenko@icloud.com,Business,Administration,3,trei,6000
+number,date,nameRo,birthDate,country,city,documentType,seria,documentNumber,documentId,phone,email,faculty,program,yearsNumber,yearsLetters,price,language
+12332,02/23/2023,MAXIM DIACENKO,02/23/2023,MOLDOVA,CHISINAU,Buletin,B,32424985702587309237,324872934newfds231287,67268060,maks.diacenko@icloud.com,Business,Administration,3,trei,6000,ro
+12332,02/23/2023,MAXIM DIACENKO,02/23/2023,MOLDOVA,CHISINAU,Buletin,B,32424985702587309237,324872934newfds231287,67268060,maks.diacenko@icloud.com,Бизнес,Администрация,3,три,6000,ru

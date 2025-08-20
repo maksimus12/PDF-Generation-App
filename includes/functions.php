@@ -34,6 +34,41 @@ if (!wp_next_scheduled('csv_to_pdf_cleanup_event')) {
 add_action('csv_to_pdf_cleanup_event', 'csv_to_pdf_clean_temp_files');
 
 /**
+ * Создает необходимую структуру папок для языковых шаблонов
+ */
+function create_language_template_folders() {
+    // Базовая директория для шаблонов
+    $templates_dir = CSV_TO_PDF_PATH . 'templates/pdf-templates/';
+    
+    // Директория для языковых шаблонов
+    $languages_dir = $templates_dir . 'languages/';
+    
+    // Создаем базовую директорию если не существует
+    if (!file_exists($templates_dir)) {
+        wp_mkdir_p($templates_dir);
+    }
+    
+    // Создаем директорию для языковых шаблонов
+    if (!file_exists($languages_dir)) {
+        wp_mkdir_p($languages_dir);
+    }
+    
+    // Список языков для создания папок
+    $languages = array('ru', 'en'); // Можно расширить по необходимости
+    
+    // Создаем папки для каждого языка
+    foreach ($languages as $lang) {
+        $lang_dir = $languages_dir . $lang . '/';
+        if (!file_exists($lang_dir)) {
+            wp_mkdir_p($lang_dir);
+        }
+    }
+}
+
+// Вызываем функцию при активации плагина
+add_action('admin_init', 'create_language_template_folders');
+
+/**
  * Plugin activation
  */
 function csv_to_pdf_plugin_activate() {
@@ -62,3 +97,4 @@ function csv_to_pdf_plugin_deactivate() {
     wp_clear_scheduled_hook('csv_to_pdf_cleanup_event');
 }
 register_deactivation_hook(__FILE__, 'csv_to_pdf_plugin_deactivate');
+

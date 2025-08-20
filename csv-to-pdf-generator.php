@@ -318,3 +318,4 @@ function form_to_pdf_init() {
 
 // Start the Form to PDF module
 add_action('init', 'form_to_pdf_init');
+

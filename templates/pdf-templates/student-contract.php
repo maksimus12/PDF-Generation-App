@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Student Contract
+ * Template Name: Student Contract (Bachelor)
  * Template ID: student-contract
  * Description: Template for university study contracts in Romanian
  * Required Fields: number, date, nameRo, birthDate, country, city, documentType, seria, documentNumber, documentId, phone, email, faculty, program, yearsNumber, yearsLetters, price
@@ -45,7 +45,7 @@ $years_letters = isset($row['yearsLetters']) ? htmlspecialchars($row['yearsLette
 $price = isset($row['price']) ? htmlspecialchars($row['price']) : '';
 
 // Определяем общее количество страниц для использования в шаблоне
-$total_pages = 10;
+$total_pages = 7;
 
 // Создаем HTML-код для футера (будет установлен в pdf-generator.php)
 $footer_html = '<div style="text-align: center; font-size: 10px;">Pagina {PAGENO} din ' . $total_pages . '</div>';
@@ -61,7 +61,7 @@ body {
     padding: 0;
 }
 h1 {
-    line-height: 1.5;
+    line-height: 1.15;
     text-align: center;
     color: #000;
     margin-bottom: 15px;
@@ -69,7 +69,7 @@ h1 {
     font-weight: bold;
 }
 h2 {
-    line-height: 1.5;
+    line-height: 1.15;
     text-align: center;
     color: #000;
     margin-bottom: 10px;
@@ -77,7 +77,7 @@ h2 {
     font-weight: bold;
 }
 h3 {
-    line-height: 1.5;
+    line-height: 1;
     color: #000;
     margin-bottom: 8px;
     font-size: 12px;
@@ -88,8 +88,8 @@ h3 {
     text-align: center;
 }
 p {
-    line-height: 1.5;
-    margin: 8px 0;
+    line-height: 1;
+    margin: 2px;
     text-align: justify;
     font-size: 14px;
 }
@@ -118,19 +118,18 @@ img {
     flex: 1;
 }
 .section {  
-    line-height: 1.5;
-    margin-bottom: 15px;
+    line-height: 1;
+    margin-bottom: 10px;
 }
 .subsection {
-    line-height: 1.5;
-    margin-bottom: 10px;
+    line-height: 1;
     margin-left: 15px;
     font-size:14px;
 }
 
 .list-item {
-    line-height: 1.5;
-    margin-bottom: 10px;
+    line-height: 1;
+    margin-bottom: 5px;
     font-size:14px;
 }
 .page-number {
@@ -221,15 +220,6 @@ img {
                 <p><strong>3.2.</strong> Posibilele modificări impuse de legislație sau de regulamentul de activitate didactică al Universității vor fi stipulate într-o anexă. De asemenea, orice modificare (schimbarea tipului finanțării, întreruperi, prelungiri etc.), intervenită pe parcursul studiilor universitare de licență, va fi consemnată într-un Act adițional.</p>
                 <p><strong>3.3.</strong> STUDENTUL care nu finalizează programul de studii în durata normală, ca urmare a repetenției, a reluării studiilor în caz de întrerupere, sau a reînmatriculării după exmatriculare sau de retragere, va solicita obligatoriu încheierea unui nou contract de studii, în condițiile stabilite de universitate la data încheierii acestuia.</p>
             </div>
-        </div>
-    </div>
-
-    <!-- Page 2 -->
-    <div class="page page-break">
-        <?php if ($secondHeader): ?>
-            <img src="<?php echo $secondHeader; ?>" alt="University Header">
-        <?php endif; ?>
-        <div class="content">
             <div class="section">
                 <h2>IV. DREPTURILE ȘI OBLIGAȚIILE PĂRȚILOR</h2>
                 
@@ -241,7 +231,17 @@ img {
                 <div class="list-item">e) repartizează anual studenții pe locurile sponsorizate, locurile cu taxă, locurile în cămine, potrivit criteriilor aprobate de instituție;</div>
                 <div class="list-item">f) stabilește cuantumul taxei de școlarizare și a celorlalte taxe;</div>
                 <div class="list-item">g) aplică soluții de acoperire, ridică temporar sau definitiv facilitățile de care beneficiază studentul (bursă, cămin, alimentarea cu titlu gratuit, etc.) în cazul nerespectării regulamentelor, acordurilor și a disciplinei în cadrul instituției.</div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Page 2 -->
+    <div class="page page-break">
+        <?php if ($secondHeader): ?>
+            <img src="<?php echo $secondHeader; ?>" alt="University Header">
+        <?php endif; ?>
+        <div class="content">
+            <div class="section">
                 <h3>4.2. Obligațiile UNIVERSITĂȚII:</h3>
                 <div class="list-item">a) organizează activități educaționale, inclusiv cele de practică și de verificare a cunoștințelor, la nivel universitar, în conformitate cu normele interne adoptate în baza specificului universitar, respectiv cu planul de învățământ, aprobat de către Senatul universitar;</div>
                 <div class="list-item">b) încheie cu studentul, la începutul fiecărui an universitar, un act adițional la contractul de studii;</div>
@@ -253,17 +253,7 @@ img {
                 <div class="list-item">h) nu modifică valoarea taxelor de școlarizare în cursul unui an universitar;</div>
                 <div class="list-item">i) evaluează, la începutul fiecărui an universitar, locurile prin sponsorizare ce vor intra în procedura de ierarhizare anuală a studenților;</div>
                 <div class="list-item">j) asigură condițiile de exercitare a drepturilor studenților, în concordanță cu normele și practicile educaționale.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Page 3 -->
-    <div class="page page-break">
-        <?php if ($secondHeader): ?>
-            <img src="<?php echo $secondHeader; ?>" alt="University Header">
-        <?php endif; ?>
-        <div class="content">
-            <div class="section">
+                
                 <h3>4.3. Drepturile STUDENTULUI:</h3>
                 <div class="list-item">a) participă la activitățile didactice și de pregătire profesională prevăzute în planul de învățământ;</div>
                 <div class="list-item">b) face parte din comunitatea universitară, în conformitate cu prevederile în vigoare;</div>
@@ -284,19 +274,20 @@ img {
                 <div class="subsection">• Promovarea unui an de studii din cadrul unui ciclu, necesită obținerea a minimum de 45 de credite (ECTS) din totalul celor 60 alocate/an, cu precizarea că numărul creditelor restante este de maximum 15 credite / an de studiu, dar nu mai mult de 20 de credite restante în interiorul ciclului (anii I și II pentru primul ciclu);</div>
                 <div class="subsection">• Promovarea unui ciclu de studii presupune promovarea tuturor disciplinelor și a numărului total de credite prevăzute pentru fiecare program de studiu.</div>
                 <div class="list-item">e) respectă legislația și toate reglementările adoptate de către structurile de conducere ale universității, îndeosebi cele referitoare la disciplină și etica universitară;</div>
+                <div class="list-item">f) aduce la cunoștința conducerii Facultății orice situație de natură să atragă modificarea statutului de student;</div>
+                <div class="list-item">g) achită taxa de studii și celelalte taxe stabilite și afișate anual de către UNIVERSITATE în cuantumul, modul și la termenul stabilit;</div>
+                
             </div>
         </div>
     </div>
 
-    <!-- Page 4 -->
+    <!-- Page 3 -->
     <div class="page page-break">
         <?php if ($secondHeader): ?>
             <img src="<?php echo $secondHeader; ?>" alt="University Header">
         <?php endif; ?>
         <div class="content">
             <div class="section">
-                <div class="list-item">f) aduce la cunoștința conducerii Facultății orice situație de natură să atragă modificarea statutului de student;</div>
-                <div class="list-item">g) achită taxa de studii și celelalte taxe stabilite și afișate anual de către UNIVERSITATE în cuantumul, modul și la termenul stabilit;</div>
                 <div class="list-item">h) achită taxa de studii integral pe anul universitar în curs, în caz de retragere/întrerupere;</div>
                 <div class="list-item">i) nu solicită restituirea taxelor achitate în cazul exmatriculării sau al transferului la alte instituții de învățământ;</div>
                 <div class="list-item">j) completează și semnează actul adițional la contractul de studii universitare la începutul fiecărui an universitar, în termenul stabilit de conducerea facultății;</div>
@@ -313,23 +304,11 @@ img {
                 <p><strong>5.3.</strong> Taxa de studii pentru anul universitar este de <strong><?php echo $price; ?> MDL</strong>, conform taxelor de studii și alte taxe, și poate fi achitată în felul următor:</p>
                 <div class="list-item">a) integral prin virament bancar/online, în contul IR Universitatea Divitia Gratiae, Cod fiscal: 1013620007488, deschis la BC 'Victoriabank' SA fil. N3 or. Chișinău, Cod IBAN: MD86VI225100000102243MDL, Codul băncii: VICBMD2X416 cu următoarele mențiuni obligatorii: „taxa de studii – numele și prenumele studentului";</div>
                 <div class="list-item">b) parțial, prin virament bancar/on-line.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Page 5 -->
-    <div class="page page-break">
-        <?php if ($secondHeader): ?>
-            <img src="<?php echo $secondHeader; ?>" alt="University Header">
-        <?php endif; ?>
-        <div class="content">
-            <div class="section">
                 <p><strong>5.4.</strong> Studenții pot achita taxa de studii integral sau parțial în două tranșe egale, în termen de 15 de zile de la începerea anului universitar, respectiv de la începerea semestrului 2 (pentru studenții care achită taxa de școlarizare în două tranșe egale).</p>
                 <p><strong>5.5.</strong> Neachitarea taxelor de studii în termenele și condițiile stabilite de universitate conduce la interdicția participării studentului la examene și conferă universității dreptul de a exmatricula studentul, cu toate consecințele aferente exmatriculării.</p>
                 <p><strong>5.6.</strong> Studentul exmatriculat pentru neachitarea taxelor datorate se poate reînscrie în programe de studii oferite de universitate, doar în condițiile achitării debitelor datorate acesteia.</p>
                 <p><strong>5.7.</strong> Taxa de studii nu include costurile aferente echipamentului și instrumentarului necesar pregătirii profesionale a studentului (laptop, birotică, etc.).</p>
             </div>
-
             <div class="section">
                 <h2>VI. ÎNCETAREA ȘI REZILIEREA CONTRACTULUI</h2>
                 <p><strong>6.1.</strong> Contractul de studii încetează la momentul finalizării studiilor. Obligațiile născute până la data încetării trebuie executate în condițiile contractuale.</p>
@@ -337,47 +316,42 @@ img {
                 <p><strong>6.3.</strong> Contractul poate fi reziliat unilateral de universitate pentru neîndeplinirea obligațiilor de către student, prin exmatricularea acestuia. În acest caz, universitatea este îndreptățită la recuperarea datoriilor acumulate de către student până la data exmatriculării și/sau a unor daune materiale.</p>
                 <p><strong>6.4.</strong> Prezentul contract încetează și în caz de forță majoră. Forța majoră este constatată de o autoritate competentă. Partea care o invocă are obligativitatea de a o aduce la cunoștința celeilalte părți, în scris, în maximum 5 zile calendaristice de la apariție, iar dovada forței majore se va comunica în cel mult 15 zile calendaristice de la apariția acesteia. Forța majoră apără de răspundere partea care o invocă, cealaltă parte neavând dreptul de a cere despăgubiri.</p>
             </div>
-
-            <div class="section">
-                <h2>VII. ALTE CLAUZE</h2>
-                <p><strong>7.1.</strong> Prin semnarea prezentului contract, studentul declară în mod expres acordul de prelucrare a datelor cu caracter personal, furnizarea datelor cu caracter personal partenerilor universității și acordul de înregistrare foto/video pe durata prezentului contract.</p>
-                <p><strong>7.2.</strong> Prin semnarea prezentului contract, studentul declară că a făcut cunoștință cu conținutul mărturisirii de credință, al regulamentelor, al metodologiilor, al normelor de disciplină, al normelor de etică și deontologie universitară și al altor documente cu caracter normativ din cadrul UNIVERSITĂȚII.</p>
-            </div>
         </div>
     </div>
 
-    <!-- Page 6 -->
+    <!-- Page 4 -->
     <div class="page page-break">
         <?php if ($secondHeader): ?>
             <img src="<?php echo $secondHeader; ?>" alt="University Header">
         <?php endif; ?>
         <div class="content">
             <div class="section">
+                <h2>VII. ALTE CLAUZE</h2>
+                <p><strong>7.1.</strong> Prin semnarea prezentului contract, studentul declară în mod expres acordul de prelucrare a datelor cu caracter personal, furnizarea datelor cu caracter personal partenerilor universității și acordul de înregistrare foto/video pe durata prezentului contract.</p>
+                <p><strong>7.2.</strong> Prin semnarea prezentului contract, studentul declară că a făcut cunoștință cu conținutul mărturisirii de credință, al regulamentelor, al metodologiilor, al normelor de disciplină, al normelor de etică și deontologie universitară și al altor documente cu caracter normativ din cadrul UNIVERSITĂȚII.</p>
                 <p><strong>7.3.</strong> Orice îngăduință din partea UNIVERSITĂȚII nu poate fi interpretată ca o renunțare la clauzele de exmatriculare stipulate.</p>
                 <p><strong>7.4.</strong> Studentul se obligă să respecte prevederile Legii securității și sănătății în muncă.</p>
                 <p><strong>7.5.</strong> În cazul apariției unor litigii izvorând din interpretarea, executarea sau rezilierea prezentului contract, care nu pot fi rezolvate pe cale amiabilă, părțile se vor adresa instanțelor competente.</p>
                 <p><strong>7.6.</strong> Prezentul contract s-a încheiat la UNIVERSITATE, în 2 (două) exemplare, câte unul pentru fiecare parte contractantă.</p>
                 <p><strong>7.7.</strong> Pentru UNIVERSITATE prezentul contract este semnat de către Rectorul UNIVERSITĂȚII.</p>
             </div>
-            
             <div class="signature-block">
                 <div class="sig-left">
                     <h1>RECTOR</h1>
-                    <p>Dr. Malancea Iurie</p>
-                    <p>Semnătura: _____________________</p>
-                    <p>L. Ș.</p>
+                    <p style="margin-top:20px;">Dr. Malancea Iurie</p>
+                    <p style="margin-top:40px;">Semnătura: _____________________</p>
+                    <p style="margin-top:20px;">L. Ș.</p>
                 </div>
                 <div class="sig-right">
                     <h1>STUDENT</h1>
-                    <p>N/P ___________________________________</p>
-                    <p>Semnătura: _____________________</p>
+                    <p style="margin-top:40px;">N/P ___________________________________</p>
+                    <p style="margin-top:40px;">Semnătura: _____________________</p>
                 </div>
             </div>
-            
         </div>
     </div>
 
-    <!-- Page 7 - Anexa 1 -->
+    <!-- Page 5 -->
     <div class="page page-break">
         <?php if ($secondHeader): ?>
             <img src="<?php echo $secondHeader; ?>" alt="University Header">
@@ -413,12 +387,12 @@ img {
                 <div class="list-item"><strong>12.</strong> Noi credem că fiecare membru al Bisericii este chemat la o slujire personală, potrivit cu „Marea poruncă" a Domnului nostru Isus Hristos.</div>
                 
                 <p style="margin-top: 20px; text-align: center;"><em>După ce studentul a luat cunoștință cu Mărturisirea de credință respectivă, acesta semnează contractul de studii, asumându-și responsabilitatea acceptării acesteia.<em></p>
-                <p><strong>(După caz) Semnătura (numele, prenumele) _______________________________&nbsp;&nbsp;&nbsp; Data _______________</strong></p>
+                <p style="margin-top: 20px;"><strong>(După caz) Semnătura (numele, prenumele) _______________________________&nbsp;&nbsp;&nbsp; Data _______________</strong></p>
             </div>
         </div>
     </div>
 
-    <!-- Page 8 - Anexa 2 -->
+    <!-- Page 6 -->
     <div class="page page-break">
         <?php if ($secondHeader): ?>
             <img src="<?php echo $secondHeader; ?>" alt="University Header">
@@ -447,17 +421,6 @@ img {
                 <div class="list-item">a) este obligatoriu respectarea orarului stabilit; se admit absențe doar în baza unei cereri prealabile, aprobată de către decanul facultății sau pe motiv de boală, fapt adeverit printr-un certificat medical, eliberat de către o instituție medicală;</div>
                 <div class="list-item">b) este interzisă convorbirea telefonică și/sau corespondența online în timpul orelor și a capelelor;</div>
                 <div class="list-item">c) este interzisă prezența la ore a persoanelor care nu sunt studenți ai universității; orele de clasă pot fi frecventate doar de către studenții universității;</div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Page 9 - Anexa 2 -->
-    <div class="page page-break">
-        <?php if ($secondHeader): ?>
-            <img src="<?php echo $secondHeader; ?>" alt="University Header">
-        <?php endif; ?>
-        <div class="content">
-            <div class="section">
                 <div class="list-item">d) este interzisă păstrarea și întrebuințarea produselor alimentare în camerele de locuit și sălile de studii;</div>
                 <div class="list-item">e) este interzis ca studentul să facă afirmații publice în numele UDG fără să fi fost împuternicit de către conducerea universității;</div>
                 <div class="list-item">f) este interzisă ținerea animalelor de companie pe teritoriul universității;</div>
@@ -466,34 +429,40 @@ img {
                 <div class="list-item">i) este interzisă aflarea băieților în camerele fetelor și viceversa, izolarea persoanelor de sex opus (sub orice pretext), relațiile intime (petting-ul, curvia);</div>
                 <div class="list-item">j) este interzisă frecventarea barurilor și a altor localuri de noapte; </div>
                 <div class="list-item">k) studentul universității DIVITIA GRATIAE trebuie să dea dovadă de un comportament cuviincios.</div>
-                <p><strong>Conduita studentului:</strong></p>
-                <div class="list-item">a) statutul de student al universității DIVITIA GRATIAE implică haine și coafură îngrijite, care corespund stilului de afaceri;</div>
-                <div class="list-item">b) este inacceptabil să se poarte pantaloni scurți și îmbrăcăminte sport (în zilele de luni-vineri între orele 8.00–17.00);</div>
-                <div class="list-item">c) fetele ar trebui să păstreze un simț al echilibrului în ceea ce privește machiajul;</div>
-                <div class="list-item">d) este nepotrivit ca studentul să se prezinte în haine transparente și mulate, decolteu adânc, fuste mini;</div>
-                <div class="list-item">e) studentul trebuie să își păstreze hainele curate și ordonate. </div>
-                <h2>V. SOLUȚIONAREA CONFLICTELOR</h2>
-                <p>Conflictele în care sunt implicați studenții, profesorii, sau personal administrativ sunt rezolvate în conformitate cu principiile biblice (Matei 18:15–17).</p>
-                <p>Abordarea directă a conflictelor se va face cu persoana implicată într-o manieră respectoasă și constructivă. O astfel de comunicare permite ambelor părți să își exprime preocupările, să clarifice neînțelegerile și să identifice o cale de rezolvare.</p>
-                <p>În cazul în care conflictul nu este soluționat, studentul se adresează dirigintelui/mentorului. Când conflictul are loc între diriginte/mentor și student, aceștia se adresează decanului facultății. Conflictele care nu pot fi soluționate la acest nivel sunt abordate/rezolvate în cadrul Consiliului universității.</p>
-                <p>Răspândirea informațiilor care nu corespund cu realitățile interne ale universității, angajarea în bârfe sau formularea de plângeri care calomniază personalitatea cuiva, exprimarea destructivă în public a nemulțumirilor cu privire la normele și practicile în cadrul UDG, este strict interzisă.</p>
-                <p>Prin aderarea la aceste principii și reguli, universitatea promovează un mediu respectuos și constructiv.</p>
             </div>
+            
+            
+            
         </div>
     </div>
-    
+
+    <!-- Page 7 - Anexa 1 -->
     <div class="page page-break">
         <?php if ($secondHeader): ?>
             <img src="<?php echo $secondHeader; ?>" alt="University Header">
         <?php endif; ?>
         <div class="content">
             <div class="section">
+                <p><strong>Conduita studentului:</strong></p>
+                <div class="list-item">a) statutul de student al universității DIVITIA GRATIAE implică haine și coafură îngrijite, care corespund stilului de afaceri;</div>
+                <div class="list-item">b) este inacceptabil să se poarte pantaloni scurți și îmbrăcăminte sport (în zilele de luni-vineri între orele 8.00–17.00);</div>
+                <div class="list-item">c) fetele ar trebui să păstreze un simț al echilibrului în ceea ce privește machiajul;</div>
+                <div class="list-item">d) este nepotrivit ca studentul să se prezinte în haine transparente și mulate, decolteu adânc, fuste mini;</div>
+                <div class="list-item">e) studentul trebuie să își păstreze hainele curate și ordonate. </div>
+                
+                <h2>V. SOLUȚIONAREA CONFLICTELOR</h2>
+                <p>Conflictele în care sunt implicați studenții, profesorii, sau personal administrativ sunt rezolvate în conformitate cu principiile biblice (Matei 18:15–17).</p>
+                <p>Abordarea directă a conflictelor se va face cu persoana implicată într-o manieră respectoasă și constructivă. O astfel de comunicare permite ambelor părți să își exprime preocupările, să clarifice neînțelegerile și să identifice o cale de rezolvare.</p>
+                <p>În cazul în care conflictul nu este soluționat, studentul se adresează dirigintelui/mentorului. Când conflictul are loc între diriginte/mentor și student, aceștia se adresează decanului facultății. Conflictele care nu pot fi soluționate la acest nivel sunt abordate/rezolvate în cadrul Consiliului universității.</p>
+                <p>Răspândirea informațiilor care nu corespund cu realitățile interne ale universității, angajarea în bârfe sau formularea de plângeri care calomniază personalitatea cuiva, exprimarea destructivă în public a nemulțumirilor cu privire la normele și practicile în cadrul UDG, este strict interzisă.</p>
+                <p>Prin aderarea la aceste principii și reguli, universitatea promovează un mediu respectuos și constructiv.</p>
+                
                 <h2>VI. VIAȚA DE STUDENT ȘI CĂSĂTORIA</h2>
                 <p>Conducerea universității recomandă studenților necăsătoriți să se abțină de la căsătorie pe durata studiilor. Intenția din spatele acestei recomandări este de a ajuta studentul să se concentreze pe activitatea academică prin minimizarea provocărilor care pot apărea din cauza echilibrării studiilor cu responsabilitățile familiale. </p>
                 <p>În cazul în care studentul decide să se căsătorească în timpul studiilor, UDG își rezervează dreptul să revizuiască Contractul de locațiune, iar studentul își asumă întreaga responsabilitate privind spațiul locativ și starea materială a familiei.</p>
                 <p>Studenții care intenționează să se căsătorească, sunt încurajați să informeze administrația universității cu cel puțin 6 luni înainte de data planificată pentru nuntă.</p>
+                
                 <h2>VII. MUNCA ÎN FOLOSUL UNIVERSITĂȚII</h2>
-                <p>Conflictele în care sunt implicați studenții, profesorii, sau personal administrativ sunt rezolvate în conformitate cu principiile biblice (Matei 18:15–17).</p>
                 <p>Ca parte a angajamentului de sprijin financiar, universitatea acoperă în mod substanțial costurile studiilor și contează pe munca fizică a studenților în folosul universității. Este obligatoriu pentru fiecare student să fie de serviciu la cantina universității, să participe în lucrări de sanitație în zilele sanitare, și să mențină ordinea și curățenia în clasa și încăperile în care acesta își desfășoară studii (conform graficului stabilit).</p>
                 <p>Studenților cărora li se oferă loc de cămin în unul din căminele universității, trebuie să contribuie la buna menținere a ordinii și curățeniei căminelor și spațiilor adiacente acestora (conform regulamentului de funcționare a căminelor UDG și fișei de sector), lucrând 80 de ore astronomice pe semestru. Pentru a îndeplini această cerință, studentului care solicită un loc în căminele universității i se va atribui aleatoriu un sector de muncă (în incinta căminului și/sau teritoriului adiacent) la începutul anului de studii (activitate desemnată și coordonată de către administrația căminului).</p>
                 <p>Studentul are dreptul să pledeze (prin depunerea cererii adiționale) să fie scutit de muncă în folosul universității/căminului, având motive întemeiate. În cazul dacă cererea lui va fi aprobată, contribuția lui în muncă poate fi recalculată în cuantumul financiar cu revizuirea plăților de studii/locațiune. Valoarea unei ore de muncă este stabilită la 40 MDL, rezultând la o contribuție totală de 6400 MDL pentru sector pe parcurs la un an de studii.</p>
@@ -501,6 +470,11 @@ img {
             </div>
         </div>
     </div>
+    
+
+
+    
+    
 
 </body>
 </html>
